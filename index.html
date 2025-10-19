@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-[#F5F8FC] text-[#0F172A]">
+  <!-- Header -->
+  <header>
+    <div class="container mx-auto">
+      <div class="flex items-center justify-between bg-[#E6F4FF] py-7 px-14 rounded-b-xl shadow-sm">
+        <!-- Logo + Title -->
+        <div class="flex items-center gap-3">
+          <span class="text-xl text-[#3B82F6]">
+            <i class="fa-solid fa-wallet"></i>
+          </span>
+          <h1 class="text-lg font-semibold">Finance Tracker</h1>
+        </div>
+
+        <!-- Search + Settings -->
+        <nav>
+          <ul class="flex items-center gap-5">
+            <li>
+              <input type="text" id="search-transactions"
+                class="py-3 px-5 bg-white rounded-lg focus:outline-none text-gray-800 shadow-sm placeholder-gray-400"
+                placeholder="Search transactions...">
+            </li>
+            <li>
+              <button id="settings-btn"
+                class="py-3 px-5 bg-white rounded-lg flex items-center justify-between gap-2 shadow-sm hover:bg-gray-100 transition cursor-pointer">
+                <i class="fa-solid fa-gear text-[#283041]"></i>
+                <span>Settings</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main>
+    <section class="overview py-14">
+      <div class="container mx-auto">
+        <!-- Overview Header -->
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
+          <h3 class="text-2xl font-semibold text-gray-800">Overview</h3>
+
+          <div class="flex items-center gap-3">
+            <button
+              id="filter-btn"
+              class="flex items-center gap-2 border border-gray-300 text-gray-700 px-5 py-2.5 rounded-md hover:bg-gray-100 transition cursor-pointer">
+              <i class="fa-solid fa-filter"></i>
+              <span id="filter-btn-text">Filter</span>
+            </button>
+
+            <button
+			        id="add-new-btn"
+              class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-md hover:bg-blue-700 transition cursor-pointer">
+              <i class="fa-solid fa-plus"></i>
+              <span>New</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Display Details -->
+        <div class="mt-12 max-w-5xl mx-auto flex justify-center items-stretch gap-10 flex-wrap">
+          <div class="flex items-center">
+            <div id="show-current-balance"
+              class="flex flex-col gap-3 bg-white py-8 px-14 rounded-full border border-[#D9E2EC] shadow-lg text-center">
+              <h4 class="text-[#94A3B8] font-medium">Current Balance</h4>
+              <p id="temporary-balance-placeholder" class="text-[#0F172A] text-md font-bold">Balance will <br> displayed here</p>
+            </div>
+          </div>
+
+          <div id="display-total-income"
+            class="flex flex-col gap-3 bg-white py-8 px-14 rounded-full border border-[#D9E2EC] shadow-lg text-center">
+            <h4 class="text-[#94A3B8] font-medium">Total Income</h4>
+		      	<p id="temporary-income-placeholder" class="text-[#0F172A] text-md font-bold">Income will <br> be displayed here</p>
+          </div>
+
+          <div id="display-total-expenses"
+            class="flex flex-col gap-3 bg-white py-8 px-14 rounded-full border border-[#D9E2EC] shadow-lg text-center">
+            <h4 class="text-[#94A3B8] font-medium">Total Expenses</h4>
+			      <p id="temporary-expense-placeholder" class="text-[#0F172A] text-md font-bold">Total Expense will <br> be displayed here</p>
+          </div>
+        </div>
+
+        <!-- Add Transaction -->
+        <div class="mt-14 max-w-5xl mx-auto p-10 border border-[#D9E2EC] rounded-xl shadow-lg bg-white">
+          <h4 class="text-[#a5a6bc] font-medium text-lg mb-6">Add Transaction</h4>
+
+          <div class="flex items-end gap-6 flex-wrap">
+            <div class="add-description flex flex-col">
+              <p class="pb-3 text-[#a5a6bc] font-medium">Description</p>
+              <input type="text" id="input-description"
+                class="py-3 px-6 border border-[#D9E2EC] rounded-lg shadow-sm placeholder-gray-500 focus:outline focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition"
+                placeholder="e.g: Grocery shopping">
+            </div>
+
+            <div class="add-amount flex flex-col">
+              <p class="pb-3 text-[#a5a6bc] font-medium">Amount</p>
+              <input type="number" id="input-amount"
+                class="py-3 px-6 border border-[#D9E2EC] rounded-lg shadow-sm placeholder-gray-500	focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition"
+                placeholder="Enter Amount...">
+            </div>
+
+            <div class="add-type flex flex-col">
+            <p class="pb-3 text-[#a5a6bc] font-medium">Type</p>
+            <select id="input-type"
+              class="py-3 pl-5 pr-6 cursor-pointer border border-[#D9E2EC] rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition">
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
+
+
+            <button 
+              id="add-btn"
+              class="py-3 px-6 bg-[#3B82F6] text-white font-semibold rounded-lg cursor-pointer hover:bg-blue-600 transition h-[52px]">
+              + Add
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="show-transaction" class="show-transaction py-15 max-w-5xl mx-auto"></section>
+  </main>
+  <script src="./script.js"></script>
+</body>
+
+</html>
