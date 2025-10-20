@@ -1,3 +1,12 @@
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 document.addEventListener("DOMContentLoaded", function () {
     var inputDescription = document.getElementById("input-description");
     var inputAmount = document.getElementById("input-amount");
@@ -8,7 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var incomePlaceholder = document.getElementById("temporary-income-placeholder");
     var expensePlaceholder = document.getElementById("temporary-expense-placeholder");
     var showTransactionDiv = document.getElementById("show-transaction");
-    var transactions = JSON.parse(localStorage.getItem("transactions") || "[]");
+    var allTransactions = JSON.parse(localStorage.getItem("transactions") || "[]"); //original array
+    var transactions = __spreadArray([], allTransactions, true); //array responsible for rendering transactions
     function noTransactionMessage() {
         var noTransaction = document.createElement("h3");
         noTransaction.className = "text-gray-500 text-left font-bold";
@@ -103,6 +113,30 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     addTransactionBtn.addEventListener("click", addTransaction);
     filterBtn.addEventListener('click', filterTransactions);
+    var filterCount = 0;
+    function filterTransactions() {
+        if (allTransactions.length === 0) {
+            alert("No Transactions Present to perform filtration");
+            return;
+        }
+        filterCount++;
+        if (filterCount % 3 === 1) {
+            // First click — show only Incomes
+            filterBtn.textContent = "Showing Incomes";
+            transactions = allTransactions.filter(function (t) { return t.transactionType.toLowerCase() === "income"; });
+        }
+        else if (filterCount % 3 === 2) {
+            // Second click — show only Expenses
+            filterBtn.textContent = "Showing Expenses";
+            transactions = allTransactions.filter(function (t) { return t.transactionType.toLowerCase() === "expense"; });
+        }
+        else {
+            // Third click — reset to all
+            filterBtn.textContent = "Show All";
+            transactions = __spreadArray([], allTransactions, true);
+        }
+        displayTransactionDetails();
+    }
     //Show No Transaction Message By Default
     if (transactions.length === 0) {
         noTransactionMessage();

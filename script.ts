@@ -18,7 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	const showTransactionDiv = document.getElementById("show-transaction") as HTMLDivElement;
 
-	let transactions: Transaction[] = JSON.parse(localStorage.getItem("transactions") || "[]");
+	let allTransactions : Transaction[] = JSON.parse(localStorage.getItem("transactions") || "[]"); //original array
+	let transactions: Transaction[] = [...allTransactions]; //array responsible for rendering transactions
 
 	function noTransactionMessage() : void {
 		const noTransaction = document.createElement("h3");
@@ -137,6 +138,34 @@ document.addEventListener("DOMContentLoaded", () => {
 	addTransactionBtn.addEventListener("click", addTransaction);
 
 	filterBtn.addEventListener('click',filterTransactions);
+	let filterCount = 0;
+
+	function filterTransactions(): void {
+		if (allTransactions.length === 0) {
+			alert("No Transactions Present to perform filtration");
+			return;
+		}
+
+		filterCount++;
+
+		if (filterCount % 3 === 1) {
+			// First click — show only Incomes
+			filterBtn.textContent = "Showing Incomes";
+			transactions = allTransactions.filter(t => t.transactionType.toLowerCase() === "income");
+		} 
+		else if (filterCount % 3 === 2) {
+			// Second click — show only Expenses
+			filterBtn.textContent = "Showing Expenses";
+			transactions = allTransactions.filter(t => t.transactionType.toLowerCase() === "expense");
+		} 
+		else {
+			// Third click — reset to all
+			filterBtn.textContent = "Show All";
+			transactions = [...allTransactions];
+		}
+
+		displayTransactionDetails();
+	}
 
 	//Show No Transaction Message By Default
 	if (transactions.length === 0) {
