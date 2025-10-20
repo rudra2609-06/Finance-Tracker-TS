@@ -8,23 +8,28 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 document.addEventListener("DOMContentLoaded", function () {
+    // Element references
     var inputDescription = document.getElementById("input-description");
     var inputAmount = document.getElementById("input-amount");
     var inputType = document.getElementById("input-type");
     var addTransactionBtn = document.getElementById("add-btn");
     var filterBtn = document.getElementById("filter-btn");
+    var searchTransactionField = document.getElementById("search-transactions");
     var balancePlaceholder = document.getElementById("temporary-balance-placeholder");
     var incomePlaceholder = document.getElementById("temporary-income-placeholder");
     var expensePlaceholder = document.getElementById("temporary-expense-placeholder");
     var showTransactionDiv = document.getElementById("show-transaction");
-    var allTransactions = JSON.parse(localStorage.getItem("transactions") || "[]"); //original array
-    var transactions = __spreadArray([], allTransactions, true); //array responsible for rendering transactions
+    // Data arrays
+    var allTransactions = JSON.parse(localStorage.getItem("transactions") || "[]");
+    var transactions = __spreadArray([], allTransactions, true);
+    // Utility: Display message when no transactions exist
     function noTransactionMessage() {
         var noTransaction = document.createElement("h3");
-        noTransaction.className = "text-gray-500 text-left font-bold";
-        noTransaction.textContent = "No Transaction";
+        noTransaction.className = "text-gray-500 text-center font-bold text-lg";
+        noTransaction.textContent = "No Transactions";
         showTransactionDiv.appendChild(noTransaction);
     }
+    // Add transaction
     function addTransaction() {
         var enteredDescription = inputDescription.value.trim();
         var enteredAmount = parseInt(inputAmount.value);
@@ -38,17 +43,17 @@ document.addEventListener("DOMContentLoaded", function () {
             transactionDescription: enteredDescription,
             transactionAmount: enteredAmount,
             transactionType: enteredType === "income" ? "Income" : "Expense",
-            transactionId: Date.now()
+            transactionId: Date.now(),
         };
         transactions.push(newTransaction);
         saveTransaction();
-        console.log(transactions);
         displayTransactionDetails();
         inputDescription.value = "";
         inputAmount.value = "";
     }
+    // Display all transactions
     function displayTransactionDetails() {
-        showTransactionDiv.innerHTML = "";
+        showTransactionDiv.replaceChildren();
         var income = 0;
         var expense = 0;
         var transactionList = document.createElement("ul");
@@ -60,7 +65,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (transactions.length > 0) {
             transactions.forEach(function (transaction) {
                 var li = document.createElement("li");
-                li.className = "py-4 px-6 flex items-center justify-between border-b border-gray-200 last:border-none";
+                li.className =
+                    "py-4 px-6 flex items-center justify-between border-b border-gray-200 last:border-none";
                 var desc = document.createElement("h4");
                 desc.className = "font-semibold text-gray-800";
                 desc.textContent = transaction.transactionDescription;
@@ -73,10 +79,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 var type = document.createElement("p");
                 type.className = "text-gray-500 italic";
                 type.textContent = transaction.transactionType;
-                var deleteBtn = document.createElement('button');
-                deleteBtn.className = "delete-btn p-3 bg-red-500 rounded-md text-white font-medium cursor-pointer hover:bg-red-400 transition-colors duration-400";
+                var deleteBtn = document.createElement("button");
+                deleteBtn.className =
+                    "delete-btn p-3 bg-red-500 rounded-md text-white font-medium cursor-pointer hover:bg-red-400 transition-colors duration-400";
                 deleteBtn.textContent = "Delete";
-                deleteBtn.setAttribute('data-id', transaction.transactionId.toString());
+                deleteBtn.setAttribute("data-id", transaction.transactionId.toString());
                 li.append(desc, amount, type, deleteBtn);
                 transactionList.appendChild(li);
                 if (transaction.transactionType === "Income") {
@@ -91,53 +98,78 @@ document.addEventListener("DOMContentLoaded", function () {
         incomePlaceholder.textContent = "+ \u20B9".concat(income);
         expensePlaceholder.textContent = "- \u20B9".concat(expense);
         balancePlaceholder.textContent = "\u20B9".concat(income - expense);
-        //delete functionality
-        showTransactionDiv.addEventListener('click', function (e) {
-            var targetedListEvent = e.target;
-            if (targetedListEvent.tagName === "BUTTON" && targetedListEvent.classList.contains("delete-btn")) {
-                var id_1 = Number(targetedListEvent.getAttribute('data-id'));
-                if (!id_1)
-                    return;
-                transactions = transactions.filter(function (transaction) { return transaction.transactionId !== id_1; });
-                saveTransaction();
-                displayTransactionDetails();
-                if (transactions.length === 0) {
-                    noTransactionMessage();
-                    return;
-                }
+    }
+    // Delete functionality
+    showTransactionDiv.addEventListener("click", function (e) {
+        var targetedListEvent = e.target;
+        if (targetedListEvent.tagName === "BUTTON" &&
+            targetedListEvent.classList.contains("delete-btn")) {
+            var id_1 = Number(targetedListEvent.getAttribute("data-id"));
+            if (!id_1)
+                return;
+            transactions = transactions.filter(function (t) { return t.transactionId !== id_1; });
+            saveTransaction();
+            displayTransactionDetails();
+            if (transactions.length === 0) {
+                noTransactionMessage();
             }
-        });
-    }
+        }
+    });
+    // Save to localStorage
     function saveTransaction() {
-        localStorage.setItem('transactions', JSON.stringify(transactions));
+        localStorage.setItem("transactions", JSON.stringify(transactions));
     }
+    // Event listeners
     addTransactionBtn.addEventListener("click", addTransaction);
-    filterBtn.addEventListener('click', filterTransactions);
+    searchTransactionField.addEventListener("input", searchTransactions);
+    filterBtn.addEventListener("click", filterTransactions);
+    // Search functionality
+    function searchTransactions() {
+        if (transactions.length === 0) {
+            alert("No Transaction Yet Added");
+            searchTransactionField.disabled = true;
+            return;
+        }
+        var queryedTransaction = searchTransactionField.value.trim().toLowerCase();
+        console.log("Entered Query is:", queryedTransaction);
+        if (queryedTransaction === "") {
+            transactions = __spreadArray([], allTransactions, true);
+            displayTransactionDetails();
+            return;
+        }
+        transactions = allTransactions.filter(function (t) { return t.transactionDescription.toLowerCase() === queryedTransaction; });
+        if (transactions.length > 0) {
+            displayTransactionDetails();
+        }
+        else {
+            showTransactionDiv.className = "font-bold text-center text-lg";
+            showTransactionDiv.textContent = "No Such Transaction Found";
+            transactions = __spreadArray([], allTransactions, true);
+        }
+    }
+    // Filter functionality
     var filterCount = 0;
     function filterTransactions() {
         if (allTransactions.length === 0) {
-            alert("No Transactions Present to perform filtration");
+            alert("No Transactions Present to Perform Filtration");
             return;
         }
         filterCount++;
         if (filterCount % 3 === 1) {
-            // First click — show only Incomes
             filterBtn.textContent = "Showing Incomes";
             transactions = allTransactions.filter(function (t) { return t.transactionType.toLowerCase() === "income"; });
         }
         else if (filterCount % 3 === 2) {
-            // Second click — show only Expenses
             filterBtn.textContent = "Showing Expenses";
             transactions = allTransactions.filter(function (t) { return t.transactionType.toLowerCase() === "expense"; });
         }
         else {
-            // Third click — reset to all
             filterBtn.textContent = "Show All";
             transactions = __spreadArray([], allTransactions, true);
         }
         displayTransactionDetails();
     }
-    //Show No Transaction Message By Default
+    // Initial load
     if (transactions.length === 0) {
         noTransactionMessage();
     }
